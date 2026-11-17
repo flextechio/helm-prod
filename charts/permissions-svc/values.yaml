@@ -1,0 +1,40 @@
+# Default values for app-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+autoscaler:
+  min: 1
+  max: 2
+  targetCPU: 80
+
+image:
+  repository: asia.gcr.io/flex-rewards/permissions-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: permissionssvc
+  type:
+  port: 50030
+
+env:
+  data:
+    LOG_FORMAT: "stackdriver"
+    LOG_ENV: "production"
+    PG_HOST: "127.0.0.1"
+    PG_PORT: "5432"
+    PG_NAME: "gc_permissions_prod"
+    PG_SSLMODE: "disable"
+
+    GCP_PROJECT_ID: flex-rewards
+    GCP_SERVICE_ACCOUNT_CRED_FILE: "/secrets/permissions-service/flex-rewards-prod-00c5ec4358fe.json"
+    GCP_SERVICE_ACCOUNT_ACCESS_ID: "permissions-svc@flex-rewards.iam.gserviceaccount.com "
+    GCP_SERVICE_ACCOUNT_PEM_FILE: "/secrets/permissions-key/permissions-prod-key.pem"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

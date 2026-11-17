@@ -1,0 +1,35 @@
+# Default values for location-service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: asia.gcr.io/flex-rewards/eth-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: ethsvc
+  type:
+  port: 50090
+
+env:
+  data:
+    LOG_LEVEL: "info"
+    LOG_ENV: "prod"
+    WALLETS_SVC_ADDR: "walletssvc:50080"
+    TOKEN_ADDRESS: "0x687174f8c49ceb7729d925c3a961507ea4ac7b28"
+    ETHEREUM_NETWORK: "https://mainnet.infura.io/v3/14cfc08eb63945d28b5a53d656f8593e"
+    CIPHER_FILE: "/secrets/kms/prod-eth-kms"
+    KMS_RING: "prod-kms-ring"
+    KMS_KEY: "prod-kms-key"
+    GOOGLE_PROJECT: "flex-rewards"
+    GOOGLE_LOCATION: "asia-southeast1"
+    GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp/flex-rewards-eth-ec0b049b2441.json"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

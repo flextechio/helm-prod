@@ -1,0 +1,29 @@
+---
+replicaCount: 1
+image:
+  repository: asia.gcr.io/flex-rewards/portal-api
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  name: portalapisvc
+  type: NodePort
+  port: 2010
+env:
+  data:
+    HTTP_PORT: :2010
+    AUTHN_SVC_ADDR: authnsvc:50020
+    IMAGES_SVC_ADDR: imgsvc:50060
+    PERMISSIONS_SVC_ADDR: permissionssvc:50030
+    REWARDS_SVC_ADDR: rewardssvc:50040
+    USERS_SVC_ADDR: userssvc:50010
+    LOYALTY_SVC_ADDR: loyaltysvc:50100
+    PRINTSTUDIO_SVC_ADDR: printstudiosvc:50110
+    MESSAGING_SVC_ADDR: messagingsvc:50130
+    AUDIENCE_SVC_ADDR: audiencesvc:50140
+    ALERTS_SVC_ADDR: alertssvc:50150
+    COMPANIES_SVC_ADDR: companiessvc:50160
+
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

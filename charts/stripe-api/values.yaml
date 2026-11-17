@@ -1,0 +1,20 @@
+---
+replicaCount: 1
+image:
+  repository: asia.gcr.io/flex-rewards/stripe-api
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  name: stripeapisvc
+  type: NodePort
+  port: 2020
+env:
+  data:
+    HTTP_PORT: :2020
+    GCP_PROJECT_ID: "flex-rewards"
+    GCP_SERVICE_ACCOUNT_CRED_FILE: "/secrets/stripe-service/stripe-api-flex-rewards-108d5ba61c3c.json"
+    GCP_SERVICE_ACCOUNT_ACCESS_ID: "stripe-api@flex-rewards.iam.gserviceaccount.com"
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

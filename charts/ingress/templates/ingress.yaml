@@ -1,0 +1,109 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "ingress.fullname" . }}
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: prod-kube-ip
+spec:
+  tls:
+    - secretName: {{ .Values.service.secret }}
+  rules:
+  - host: {{ .Values.service.host }}
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ .Values.service.serviceName }}
+            port:
+              number: {{ .Values.service.targetPort }}
+  - host: "images.flexrewards.io"
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        backend:
+          service:
+            name: imagorsvc
+            port:
+              number: 8000
+  - host: "admin.flexrewards.io"
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        backend:
+          service:
+            name: admin-svc
+            port:
+              number: 80
+  - host: "dashboard.flexrewards.io"
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        backend:
+          service:
+            name: portalsvc
+            port:
+              number: 80
+  - host: "forgot.flexrewards.io"
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        backend:
+          service:
+            name: pwdresetweb
+            port:
+              number: 2001
+  - host: "referral.flexrewards.io"
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        backend:
+          service:
+            name: referralweb
+            port:
+              number: 2002
+  - host: "partner.flexrewards.io"
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        backend:
+          service:
+            name: loyaltyweb
+            port:
+              number: 2003
+  - host: "portal-api.flexrewards.io"
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        backend:
+          service:
+            name: portalapisvc
+            port:
+              number: 2010
+  - host: "stripe.flexrewards.io"
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        backend:
+          service:
+            name: stripeapisvc
+            port:
+              number: 2020
+  - host: "online.flexrewards.io"
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        backend:
+          service:
+            name: webappsvc
+            port:
+              number: 80
+  - host: "companion.flexrewards.io"
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        backend:
+          service:
+            name: companionsvc
+            port:
+              number: 80

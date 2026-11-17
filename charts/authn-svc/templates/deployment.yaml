@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "authn-svc.fullname" . }}
+  labels:
+    app: {{ template "authn-svc.name" . }}
+    chart: {{ template "authn-svc.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "authn-svc.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "authn-svc.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              cpu: "80m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+          ports:
+            - name: authn-svc
+              containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: google-application-credentials
+              mountPath: /secrets/gcp
+              readOnly: true
+            - name: google-priv-key
+              mountPath: /secrets/privkey
+            - name: secrets
+              mountPath: /secrets/authn-service
+              readOnly: true
+            - name: apple-auth-key
+              mountPath: /secrets/apple-auth-key
+              readOnly: true
+            - name: apple-web-auth-key
+              mountPath: /secrets/apple-web-auth-key
+              readOnly: true
+          env:
+            {{- range $key, $value := .Values.env.data }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end}}
+            - name: PG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: username
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: password
+            - name: JWT_HMAC_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: authn-jwt
+                  key: hmac-secret
+        - name: cloud-sql-proxy
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.1.0
+          args:
+            - "--private-ip"
+            - "--credentials-file=/secrets/cloudsql/credentials.json"
+            - "--structured-logs"
+            - "--port=5432"
+            - "flex-rewards:asia-southeast1:flexrewards-postgres-clu"
+          volumeMounts:
+            - name: cloudsql-instance-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
+          securityContext:
+            runAsNonRoot: true
+          resources:
+            limits:
+              memory: "300Mi"
+              cpu:    "150m"
+            requests:
+              memory: "100Mi"
+              cpu:    "50m"
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: cloudsql-instance-credentials
+        - name: google-application-credentials
+          secret:
+            secretName: google-application-credentials
+        - name: google-priv-key
+          secret:
+            secretName: google-priv-key
+        - name: secrets
+          secret:
+            secretName: authn-secrets
+        - name: apple-auth-key
+          secret:
+            secretName: apple-auth-key
+        - name: apple-web-auth-key
+          secret:
+            secretName: apple-web-auth-key

@@ -1,0 +1,41 @@
+# Default values for app-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+autoscaler:
+  min: 1
+  max: 3
+  targetCPU: 80
+
+image:
+  repository: asia.gcr.io/flex-rewards/notifications-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: notsvc
+  type:
+  port: 50050
+
+env:
+  data:
+    LOG_LEVEL: "info"
+    LOG_ENV: "prod"
+    FCM_SENDER_ID: "1096698763726"
+    GOOGLE_SERVICE_ACCOUNT: "flex-storage-access@flex-rewards.iam.gserviceaccount.com"
+    GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp/flex-rewards-c0eba827a6f7.json"
+    GOOGLE_PRIVATE_KEY: "/secrets/privkey/privkey-prod.pem"
+    GOOGLE_PROJECT_ID: "flex-rewards"
+    GOOGLE_SUBSCRIPTION: "notifications_sub"
+
+    # Events pub/sub access
+    GCP_SERVICE_ACCOUNT_CRED_FILE: "/secrets/notifications-service/notifications-svc-flex-rewards-52cdd36116ca.json"
+    GCP_PROJECT_ID: "flex-rewards"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

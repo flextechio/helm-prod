@@ -1,0 +1,46 @@
+# Default values for app-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+autoscaler:
+  min: 1
+  max: 2
+  targetCPU: 80
+
+image:
+  repository: asia.gcr.io/flex-rewards/authn-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: authnsvc
+  type:
+  port: 50020
+
+env:
+  data:
+    LOG_FORMAT: "stackdriver"
+    LOG_ENV: "production"
+    PG_HOST: "127.0.0.1"
+    PG_PORT: "5432"
+    PG_NAME: "gc_authn_prod"
+    PG_SSLMODE: "disable"
+    USERS_SVC_ADDR: "userssvc:50010"
+    PERMISSIONS_SVC_ADDR: "permissionssvc:50030"
+    GCP_SERVICE_ACCOUNT_CRED_FILE: "/secrets/authn-service/authn-svc-flex-rewards-b998beafde3a.json"
+    GCP_PROJECT_ID: "flex-rewards"
+    APPLE_TEAM_ID: "JKSPJSY5RW"
+    APPLE_CLIENT_ID: "io.flexrewards.app.store"
+    APPLE_KEY_ID: "GN4WUA8A72"
+    APPLE_KEY_PATH: "/secrets/apple-auth-key/AuthKey_GN4WUA8A72.p8"
+    APPLE_WEB_KEY_ID: "4MHF3R9S3W"
+    APPLE_WEB_KEY_PATH: "/secrets/apple-web-auth-key/AuthKey_4MHF3R9S3W.p8"
+    APPLE_SERVICE_ID: "com.flexrewardswebstore.store"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

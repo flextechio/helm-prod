@@ -1,0 +1,62 @@
+# Default values for imagor.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+image:
+  repository: shumc/imagor
+  tag: "1.9.1"
+  pullPolicy: IfNotPresent
+
+service:
+  name: imagorsvc
+  type: NodePort
+  port: 8000
+
+# Prometheus metrics endpoint (scraped separately from the image port)
+metrics:
+  port: 5000
+
+# Cloud CDN on the GKE ingress backend. GCLB health check is HTTP on
+# /healthcheck (backendconfig.yaml); the pod's kubelet liveness/readiness
+# probes are separately tcpSocket (deployment.yaml) — both are correct.
+cdn:
+  enabled: true
+  cacheMode: USE_ORIGIN_HEADERS
+
+env:
+  data:
+    PORT: "8000"
+    # HMAC URL signing — must match thumbor SECURITY_KEY so existing signed
+    # thumbor URLs keep validating. imagor defaults to SHA1 HMAC, same as thumbor.
+    IMAGOR_SIGNER_TYPE: "sha1"
+    # Load source images directly from the GCS bucket by object key, matching
+    # how thumbor resolves its image paths.
+    GCLOUD_LOADER_BUCKET: "thumbor-imageoriginals-prod"
+    # Application Default Credentials for GCS (same service account image-svc uses).
+    GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp/flex-rewards-c0eba827a6f7.json"
+    # Expose Prometheus metrics on the metrics port.
+    PROMETHEUS_BIND: ":5000"
+    # Safety / resource limits (see imagor security docs).
+    IMAGOR_REQUEST_TIMEOUT: "30s"
+    IMAGOR_LOAD_TIMEOUT: "10s"
+    IMAGOR_PROCESS_CONCURRENCY: "20"
+    IMAGOR_PROCESS_QUEUE_SIZE: "100"
+    VIPS_MAX_WIDTH: "5000"
+    VIPS_MAX_HEIGHT: "5000"
+    VIPS_MAX_RESOLUTION: "16800000"
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
+  limits:
+    cpu: "1"
+    memory: "1Gi"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

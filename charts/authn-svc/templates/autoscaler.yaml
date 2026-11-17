@@ -1,0 +1,16 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "authn-svc.fullname" . }}
+  namespace: default
+spec:
+  maxReplicas: {{ .Values.autoscaler.max }}
+  minReplicas: {{ .Values.autoscaler.min }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "authn-svc.fullname" . }}
+  targetCPUUtilizationPercentage: {{ .Values.autoscaler.targetCPU }}
+status:
+  currentReplicas: 0
+  desiredReplicas: 0

@@ -1,0 +1,49 @@
+# Default values for app-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+autoscaler:
+  min: 1
+  max: 2
+  targetCPU: 80
+
+image:
+  repository: asia.gcr.io/flex-rewards/wallets-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: walletssvc
+  type:
+  port: 50080
+
+env:
+  data:
+    LOG_FORMAT: "stackdriver"
+    LOG_ENV: "production"
+    PG_HOST: "127.0.0.1"
+    PG_PORT: "5432"
+    PG_NAME: "gc_wallets_prod"
+    PG_SSLMODE: "disable"
+    USERS_SVC_ADDR: "userssvc:50010"
+    NOTIFICATIONS_SVC_ADDR: "notsvc:50050"
+    ETH_SVC_ADDR: "ethsvc:50090"
+    INITIAL_BLOCK: "8572745"
+    MIN_EXTERNAL_TRANSFER: 1000
+    MAX_MONTHLY_EXTERNAL_TRANSFER: 30
+    GOOGLE_SERVICE_ACCOUNT: "flex-storage-access@flex-rewards.iam.gserviceaccount.com"
+    GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp/flex-rewards-c0eba827a6f7.json"
+    GOOGLE_PRIVATE_KEY: "/secrets/privkey/privkey-prod.pem"
+    GOOGLE_PROJECT_ID: "flex-rewards"
+    GOOGLE_TOPIC: "notifications_topic"
+    GCP_SERVICE_ACCOUNT_CRED_FILE: "/secrets/wallets-service/wallets-service-flex-rewards-9ce598061c67.json"
+    GCP_PROJECT_ID: "flex-rewards"
+
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

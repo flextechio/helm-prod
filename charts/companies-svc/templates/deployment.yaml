@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "companies-svc.fullname" . }}
+  labels:
+    app: {{ template "companies-svc.name" . }}
+    chart: {{ template "companies-svc.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "companies-svc.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "companies-svc.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              cpu: "80m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+          ports:
+            - name: companies-svc
+              containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: secrets
+              mountPath: /secrets/companies-service
+              readOnly: true
+            - name: priv-key
+              mountPath: /secrets/companies-key
+          env:
+            {{- range $key, $value := .Values.env.data }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end}}
+            - name: PG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: username
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: password
+            # Secret created out-of-band from Secret Manager, never by a chart. Once a merchant
+            # links, every stored Square token depends on this key: losing it orphans them all.
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cloud-squareup-credentials
+                  key: encryption_key
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: companies-secrets
+                  key: stripe-secret-key
+        - name: cloud-sql-proxy
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.1.0
+          args:
+            - "--private-ip"
+            - "--credentials-file=/secrets/cloudsql/credentials.json"
+            - "--structured-logs"
+            - "--port=5432"
+            - "flex-rewards:asia-southeast1:flexrewards-postgres-clu"
+          volumeMounts:
+            - name: cloudsql-instance-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
+          securityContext:
+            runAsNonRoot: true
+          resources:
+            limits:
+              memory: "400Mi"
+              cpu:    "200m"
+            requests:
+              memory: "200Mi"
+              cpu:    "100m"
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: cloudsql-instance-credentials
+        - name: secrets
+          secret:
+            secretName: companies-secrets
+        - name: priv-key
+          secret:
+            secretName: companies-private-key

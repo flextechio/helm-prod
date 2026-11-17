@@ -1,0 +1,41 @@
+# Default values for app-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+autoscaler:
+  min: 1
+  max: 2
+  targetCPU: 80
+
+image:
+  repository: asia.gcr.io/flex-rewards/users-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: userssvc
+  type:
+  port: 50010
+
+env:
+  data:
+    LOG_FORMAT: "stackdriver"
+    LOG_ENV: "production"
+    PG_HOST: "127.0.0.1"
+    PG_PORT: "5432"
+    PG_NAME: "gc_users_prod"
+    PG_SSLMODE: "disable"
+    AUTHN_SVC_ADDR: "authnsvc:50020"
+    WALLETS_SVC_ADDR: "walletssvc:50080"
+    IMAGE_SVC_ADDR: "imgsvc:50060"
+    PERMISSIONS_SVC_ADDR: permissionssvc:50030
+    GCP_SERVICE_ACCOUNT_CRED_FILE: "/secrets/users-service/users-service-flex-rewards-004a43e2ec26.json"
+    GCP_PROJECT_ID: "flex-rewards"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

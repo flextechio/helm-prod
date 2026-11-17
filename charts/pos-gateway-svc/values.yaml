@@ -1,0 +1,70 @@
+# pos-gateway-svc: gRPC only in Phase 1 — no HTTP tier, no ingress, no BackendConfig yet.
+# WRITTEN, NOT INSTALLED. There is no helm-prod chart repo yet (§1.5 of the infra plan), Prod is
+# still Helm 2 / Tiller from the build server, and Prod is meshed with Linkerd while Staging is
+# not (§7) — this chart exists so the three repos don't diverge on day one, not for a deploy.
+#
+# Mirrors helm-dev/charts/pos-gateway-svc, re-pointed at the Prod project, instance and database.
+replicaCount: 1
+
+image:
+  repository: asia.gcr.io/flex-rewards/pos-gateway-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: posgatewaysvc
+  type: ClusterIP
+  # protos/posgateway, in-cluster only (posgatewaysvc:50190). Same port as Dev/Staging — see
+  # helm-dev/charts/pos-gateway-svc/values.yaml for the allocation table.
+  grpcPort: 50190
+
+env:
+  data:
+    LOG_ENV: "production"
+    LOG_FORMAT: "stackdriver"
+    LOG_DEBUG: "false"
+    GCP_PROJECT_ID: "flex-rewards"
+    # Phase 1: the service opens no database connection yet (nothing reads or writes). Set now
+    # so the pod is shaped the same way from day one. Change PG_NAME together with
+    # cmd/db/config.yml's gcp_prod entry.
+    PG_HOST: "127.0.0.1"
+    PG_NAME: "flex_pos_gateway_prod"
+    PG_PORT: "5432"
+    PG_SSLMODE: "disable"
+    # The last wall on the Square integration. Must be turned on in a deployment's own values,
+    # never here — squareup-api still owns Square traffic until the gateway absorbs it.
+    POS_SQUARE_ENABLED: "false"
+    SQUARE_ENVIRONMENT: "production"
+
+# Which database this pod is shaped to talk to. Any other deployment MUST override both
+# instance and credentials together — a copy of this chart with only one of them changed points
+# at the wrong database.
+cloudsql:
+  instance: "flex-rewards:asia-southeast1:flexrewards-postgres-clu"
+  credentialsSecret: cloudsql-instance-credentials
+
+# requests == limits on memory: Guaranteed QoS is deferred until the SSE/device-count load test
+# (Phase 1 serves no tablets yet, so BestEffort-adjacent Burstable is acceptable for now).
+resources:
+  app:
+    requests:
+      cpu: "80m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+  cloudSqlProxy:
+    requests:
+      cpu: "100m"
+      memory: "200Mi"
+    limits:
+      cpu: "200m"
+      memory: "400Mi"
+
+# iptables convergence on shutdown. Not stream-draining — that's an SSE-phase concern and isn't
+# relevant here since this pod holds no long-lived connections yet.
+preStopSleepSeconds: 5
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

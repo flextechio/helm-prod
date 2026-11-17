@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "stripe-api.fullname" . }}
+  labels:
+    app: {{ template "stripe-api.name" . }}
+    chart: {{ template "stripe-api.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "stripe-api.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "stripe-api.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+          readinessProbe:
+            httpGet:
+              path: "/healthcheck"
+              port: 2020
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 60
+            failureThreshold: 3
+            timeoutSeconds: 1
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: "/healthcheck"
+              port: 2020
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 60
+            failureThreshold: 3
+            timeoutSeconds: 1
+            successThreshold: 1
+          ports:
+            - name: stripe-api
+              containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: secrets
+              mountPath: /secrets/stripe-service
+              readOnly: true
+          env:
+            {{- range $key, $value := .Values.env.data }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end}}
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-keys
+                  key: secret-key
+            - name: STRIPE_WEBHOOK_ENDPOINT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-keys
+                  key: webhook-secret
+      volumes:
+        - name: secrets
+          secret:
+            secretName: stripe-secrets

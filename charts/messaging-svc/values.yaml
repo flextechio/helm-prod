@@ -1,0 +1,49 @@
+# Default values for app-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: asia.gcr.io/flex-rewards/messaging-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: messagingsvc
+  type:
+  port: 50130
+
+env:
+  data:
+    LOG_FORMAT: "stackdriver"
+    PG_HOST: "127.0.0.1"
+    PG_PORT: "5432"
+    PG_NAME: "flex_messaging_prod"
+    PG_SSLMODE: "disable"
+    PERMISSIONS_SVC_ADDR: permissionssvc:50030
+    REWARDS_SVC_ADDR: "rewardssvc:50040"
+    USERS_SVC_ADDR: "userssvc:50010"
+    NOTIFICATIONS_SVC_ADDR: "notsvc:50050"
+    LOYALTY_SVC_ADDR: "loyaltysvc:50100"
+    IMAGE_SVC_ADDR: "imgsvc:50060"
+    COMPANIES_SVC_ADDR: "companiessvc:50160"
+
+    GCP_SERVICE_ACCOUNT_CRED_FILE: "/secrets/scribe-service/scribe-svc-flex-rewards-dd66400aaa3e.json"
+    GCP_PROJECT_ID: "flex-rewards"
+    REFERRAL_WEB_PROTOCOL: "https"
+    REFERRAL_WEB_HOST: "referral.flexrewards.io"
+    LOYALTY_WEB_PROTOCOL: "https"
+    LOYALTY_WEB_HOST: "partner.flexrewards.io"
+    APP_WEB_PROTOCOL: "https"
+    APP_WEB_HOST: "forgot.flexrewards.io"
+    QUICKLINK_DOMAIN_URI: "https://flexrewards.app.link/RGoTOX9SE9"
+    PORTAL_WEB_PROTOCOL: "https"
+    PORTAL_WEB_HOST: "dashboard.flexrewards.io"
+    FLEX_SUPPORT_EMAIL: support@myflexrewards.com
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

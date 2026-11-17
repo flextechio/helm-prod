@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "portal-web.fullname" . }}
+  labels:
+    app: {{ template "portal-web.name" . }}
+    chart: {{ template "portal-web.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "portal-web.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "portal-web.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              cpu: "60m"
+              memory: "64Mi"
+            limits:
+              cpu: "120m"
+              memory: "128Mi"
+          ports:
+            - name: portal-web
+              containerPort: {{ .Values.service.port }}
+          env:
+            {{- range $key, $value := .Values.env.data }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end}}

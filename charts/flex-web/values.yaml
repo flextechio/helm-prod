@@ -1,0 +1,23 @@
+# Default values for location-service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: asia.gcr.io/flex-rewards/flex-web
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: webappsvc
+  type: NodePort
+  port: 80
+
+env: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

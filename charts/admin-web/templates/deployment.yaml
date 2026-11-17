@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "admin-web.fullname" . }}
+  labels:
+    app: {{ template "admin-web.name" . }}
+    chart: {{ template "admin-web.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "admin-web.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "admin-web.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              cpu: "30m"
+              memory: "32Mi"
+            limits:
+              cpu: "60m"
+              memory: "64Mi"
+          ports:
+            - name: admin-web
+              containerPort: {{ .Values.service.port }}
+          env:
+            {{- range $key, $value := .Values.env.data }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end}}

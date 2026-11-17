@@ -1,0 +1,35 @@
+# Default values for app-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: asia.gcr.io/flex-rewards/script-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: scriptsvc
+  type:
+  port: 50130
+
+env:
+  data:
+    LOG_FORMAT: "stackdriver"
+    LOG_ENV: "production"
+    GCP_SERVICE_ACCOUNT_CRED_FILE: "/secrets/script-service/script-svc-flex-rewards-51c78a948af9.json"
+    GCP_SERVICE_ACCOUNT_PEM_FILE: "/secrets/script-key/script-prod-key.pem"
+    GCP_SERVICE_ACCOUNT_ACCESS_ID: "script-service@flex-rewards.iam.gserviceaccount.com"
+    GCP_PROJECT_ID: "flex-rewards"
+    SET_CSV_BUCKET_NAME: reports-csv-flexprod
+    SET_PDF_BUCKET_NAME: print-studio-pdf
+    REWARDS_SVC_ADDR: "rewardssvc:50040"
+    LOYALTY_SVC_ADDR: "loyaltysvc:50100"
+    COMPANIES_SVC_ADDR: "companiessvc:50160"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

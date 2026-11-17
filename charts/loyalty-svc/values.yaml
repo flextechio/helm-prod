@@ -1,0 +1,43 @@
+# Default values for app-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: asia.gcr.io/flex-rewards/loyalty-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: loyaltysvc
+  type:
+  port: 50100
+
+env:
+  data:
+    APPLINK_DOMAIN_URI_PREFIX: https://flexrewards.app.link
+    APPLINK_FALLBACK_URI_PREFIX: https://partner.flexrewards.io
+    LOG_FORMAT: stackdriver
+    LOG_ENV: production
+    PG_HOST: 127.0.0.1
+    PG_PORT: 5432
+    PG_NAME: flex_loyalty_prod
+    PG_SSLMODE: disable
+    REWARDS_SVC_ADDR: rewardssvc:50040
+    USERS_SVC_ADDR: "userssvc:50010"
+    AUTHN_SVC_ADDR: authnsvc:50020
+    MESSAGING_SVC_ADDR: messagingsvc:50130
+    COMPANIES_SVC_ADDR: companiessvc:50160
+    GCP_PROJECT_ID: flex-rewards
+    GCP_SERVICE_ACCOUNT_CRED_FILE: "/secrets/loyalty-service/loyalty-service-flex-rewards-c80f756e42fe.json"
+    GCP_SERVICE_ACCOUNT_ACCESS_ID: "loyalty-service@flex-rewards.iam.gserviceaccount.com"
+    GCP_SERVICE_ACCOUNT_PEM_FILE: "/secrets/loyalty-key/loyalty-prod-key.pem"
+    COUPON_SET_PDF_BUCKET_NAME: flex-coupon-set-pdf-prod
+    PERMISSIONS_SVC_ADDR: permissionssvc:50030
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

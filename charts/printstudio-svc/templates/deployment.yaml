@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "printstudio-svc.fullname" . }}
+  labels:
+    app: {{ template "printstudio-svc.name" . }}
+    chart: {{ template "printstudio-svc.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "printstudio-svc.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "printstudio-svc.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "300Mi"
+            limits:
+              cpu: "200m"
+              memory: "500Mi"
+          ports:
+            - name: printstudio-svc
+              containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: secrets
+              mountPath: /secrets/printstudio-service
+              readOnly: true
+            - name: priv-key
+              mountPath: /secrets/printstudio-key
+          env:
+            {{- range $key, $value := .Values.env.data }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end}}
+            - name: PG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: username
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: password
+        - name: cloud-sql-proxy
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.1.0
+          args:
+            - "--private-ip"
+            - "--credentials-file=/secrets/cloudsql/credentials.json"
+            - "--structured-logs"
+            - "--port=5432"
+            - "flex-rewards:asia-southeast1:flexrewards-postgres-clu"
+          volumeMounts:
+            - name: cloudsql-instance-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
+          securityContext:
+            runAsNonRoot: true
+          resources:
+            limits:
+              memory: "400Mi"
+              cpu:    "200m"
+            requests:
+              memory: "200Mi"
+              cpu:    "100m"
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: cloudsql-instance-credentials
+        - name: secrets
+          secret:
+            secretName: printstudio-secrets
+        - name: priv-key
+          secret:
+            secretName: printstudio-private-key

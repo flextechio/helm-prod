@@ -1,0 +1,5 @@
+apiVersion: v1
+appVersion: "1.0"
+description: Wallets Service for Kubernetes Dev
+name: wallets-svc
+version: 0.1.3

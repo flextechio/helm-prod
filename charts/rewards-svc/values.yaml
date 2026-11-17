@@ -1,0 +1,56 @@
+# Default values for app-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+autoscaler:
+  min: 1
+  max: 3
+  targetCPU: 80
+
+image:
+  repository: asia.gcr.io/flex-rewards/rewards-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: rewardssvc
+  type:
+  port: 50040
+
+env:
+  data:
+    LOG_LEVEL: "info"
+    LOG_ENV: "prod"
+    DB_HOST: "127.0.0.1"
+    DB_PORT: "5432"
+    DB_NAME: "gc_rewards_prod"
+    DB_SSLMODE: "disable"
+    PERMISSIONS_SVC_ADDR: "permissionssvc:50030"
+    NOTIFICATIONS_SVC_ADDR: "notsvc:50050"
+    USERS_SVC_ADDR: "userssvc:50010"
+    IMAGE_SVC_ADDR: "imgsvc:50060"
+    LOCATIONS_SVC_ADDR: "locationsvc:50070"
+    LOYALTY_SVC_ADDR: "loyaltysvc:50100"
+    WALLETS_SVC_ADDR: "walletssvc:50080"
+    COMPANIES_SVC_ADDR: "companiessvc:50160"
+    MERCHANT_MAIL_PROTOCOL: "http"
+    MERCHANT_MAIL_HOST: "portal.flexrewards.io"
+    REFERRAL_WEB_MAIL_PROTOCOL: "https"
+    REFERRAL_WEB_MAIL_HOST: "referral.flexrewards.io"
+    GOOGLE_SERVICE_ACCOUNT: "flex-storage-access@flex-rewards.iam.gserviceaccount.com"
+    GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp/flex-rewards-c0eba827a6f7.json"
+    GOOGLE_PRIVATE_KEY: "/secrets/privkey/privkey-prod.pem"
+    GOOGLE_PROJECT_ID: "flex-rewards"
+    GOOGLE_TOPIC: "notifications_topic"
+    APPLINK_DOMAIN_URI_PREFIX: "https://flexrewards.app.link"
+    APPLINK_FALLBACK_URI_PREFIX: "https://partner.flexrewards.io"
+    GCLOUD_SERVICE_ACCOUNT_CRED_FILE: "/secrets/rewards-service/rewards-service-flex-rewards-35c7cea84908.json"
+    GCLOUD_PROJECT_ID: "flex-rewards"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

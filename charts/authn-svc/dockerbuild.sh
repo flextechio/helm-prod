@@ -1,0 +1,5 @@
+cd ../../../cosmere/go/src/roshar/services/authn-svc
+make dockerbuild
+docker build -t authn-service -f Dockerfile .
+rm -f authn-service
+cd -

@@ -1,0 +1,5 @@
+cd ../../../cosmere/go/src/roshar/services/wallets-svc
+make dockerbuild
+docker build -t wallets-service -f Dockerfile .
+rm -f wallets-service
+cd -

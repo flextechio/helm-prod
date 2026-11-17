@@ -1,0 +1,49 @@
+# Default values for app-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+autoscaler:
+  min: 1
+  max: 2
+  targetCPU: 80
+
+image:
+  repository: asia.gcr.io/flex-rewards/app-server
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: appsvc
+  type: NodePort
+  port: 2000
+
+env:
+  data:
+    LOG_ENV: "production"
+    LOG_FORMAT: "stackdriver"
+    USERS_SVC_ADDR: "userssvc:50010"
+    AUTHN_SVC_ADDR: "authnsvc:50020"
+    PERMISSIONS_SVC_ADDR: "permissionssvc:50030"
+    REWARDS_SVC_ADDR: "rewardssvc:50040"
+    IMAGES_SVC_ADDR: "imgsvc:50060"
+    LOCATIONS_SVC_ADDR: "locationsvc:50070"
+    WALLETS_SVC_ADDR: "walletssvc:50080"
+    ETH_SVC_ADDR: "ethsvc:50090"
+    LOYALTY_SVC_ADDR: loyaltysvc:50100
+    PRINTSTUDIO_SVC_ADDR: printstudiosvc:50110
+    MESSAGING_SVC_ADDR: messagingsvc:50130
+    COMPANIES_SVC_ADDR: companiessvc:50160
+    AUDIENCE_CUSTOMER: "io.flexrewards.app.store"
+    AUDIENCE_ADMIN: "admin.flexrewards.io"
+    AUDIENCE_MERCHANT: "portal.flexrewards.io"
+    APP_ENV: "production"
+    APP_ID: "io.flexrewards.app.store"
+    APP_MIN_VERSION: 0.83.0
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

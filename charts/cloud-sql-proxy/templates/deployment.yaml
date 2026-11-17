@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "cloud-sql-proxy.fullname" . }}
+  labels:
+    app: {{ template "cloud-sql-proxy.name" . }}
+    chart: {{ template "cloud-sql-proxy.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "cloud-sql-proxy.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "cloud-sql-proxy.name" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        linkerd.io/inject: disabled
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository }}
+          command: ["/cloud_sql_proxy",
+                    "-instances=flex-rewards:asia-southeast1:flexrewards-postgres-clu=tcp:0.0.0.0:5432",
+                    "-credential_file=/secrets/cloudsql/credentials.json"]
+          ports:
+            - name: cloudsqlsvc
+              containerPort: 5432
+          securityContext:
+            runAsUser: 2  # non-root user
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: cloudsql-instance-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
+          resources:
+            requests:
+              memory: "250Mi"
+              cpu:    "70m"
+            limits:
+              cpu: "200m"
+              memory: "250Mi"
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: cloudsql-instance-credentials

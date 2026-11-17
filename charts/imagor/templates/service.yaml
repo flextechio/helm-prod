@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  {{- if .Values.cdn.enabled }}
+  annotations:
+    cloud.google.com/backend-config: '{"default": "{{ .Values.service.name }}-backendconfig"}'
+  {{- end }}
+  labels:
+    app: {{ template "imagor.name" . }}
+    chart: {{ template "imagor.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      protocol: TCP
+  selector:
+    app: {{ template "imagor.name" . }}
+    release: {{ .Release.Name }}

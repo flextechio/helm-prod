@@ -1,0 +1,11 @@
+# Default values for app-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+service:
+  name: flextechdev-ingress
+  type: LoadBalancer
+  host: api.flexrewards.io
+  secret: tls-secrets
+  serviceName: appsvc
+  targetPort: 2000

@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "eth-svc.fullname" . }}
+  labels:
+    app: {{ template "eth-svc.name" . }}
+    chart: {{ template "eth-svc.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "eth-svc.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "eth-svc.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              cpu: "20m"
+              memory: "10Mi"
+            limits:
+              cpu: "200m"
+              memory: "20Mi"
+          ports:
+            - name: eth-svc
+              containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: google-eth-account
+              mountPath: /secrets/gcp
+              readOnly: true
+            - name: google-cipher-key
+              mountPath: /secrets/kms
+          env:
+            {{- range $key, $value := .Values.env.data }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end}}
+      volumes:
+        - name: google-eth-account
+          secret:
+            secretName: google-eth-account
+        - name: google-cipher-key
+          secret:
+            secretName: google-cipher-key

@@ -1,0 +1,31 @@
+# Default values for location-service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: asia.gcr.io/flex-rewards/eth-listener
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: ethlistener
+  type:
+  port: 50100
+
+env:
+  data:
+    LOG_ENV: "prod"
+    WALLETS_SVC_ADDR: "walletssvc:50080"
+    ETH_SVC_ADDR: "ethsvc:50090"
+    TOKEN_ADDRESS: "0x687174f8c49ceb7729d925c3a961507ea4ac7b28"
+    ETHEREUM_NETWORK: "https://mainnet.infura.io/v3/14cfc08eb63945d28b5a53d656f8593e"
+    ETHEREUM_WSS_NETWORK: "wss://mainnet.infura.io/ws/v3/14cfc08eb63945d28b5a53d656f8593e"
+    env: "production"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

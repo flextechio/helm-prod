@@ -1,0 +1,106 @@
+# WRITTEN, NOT INSTALLED (see values.yaml). Before this is ever deployed: Prod is meshed with
+# Linkerd and Staging is not yet, so this is the first meshed run of this workload and must wait
+# for a meshed rehearsal in Staging first. It will also need `config.linkerd.io/shutdown-grace-
+# period` set above the app's drain window (no chart in the estate sets this today, so there is
+# no precedent to copy), and its own linkerd-proxy memory limits — the image-svc numbers are for
+# a different workload and are not transferable. None of that is decided yet, so nothing below
+# sets it; do not invent numbers here.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "pos-gateway-svc.fullname" . }}
+  labels:
+    app: {{ template "pos-gateway-svc.name" . }}
+    chart: {{ template "pos-gateway-svc.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "pos-gateway-svc.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "pos-gateway-svc.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources.app | nindent 12 }}
+          ports:
+            - name: grpc
+              containerPort: {{ .Values.service.grpcPort }}
+          # gRPC: the probe is the port being open. Timings as helm-dev's pos-gateway-svc.
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.service.grpcPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 60
+            failureThreshold: 3
+            timeoutSeconds: 1
+            successThreshold: 1
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.service.grpcPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 60
+            failureThreshold: 3
+            timeoutSeconds: 1
+            successThreshold: 1
+          # kube-proxy's iptables rules take a moment to stop routing here after the pod is
+          # marked for termination; the pod keeps serving during this sleep, it is not a pause.
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sleep", "{{ .Values.preStopSleepSeconds }}"]
+          env:
+            # One source of truth for the port: the container binds what the Service targets.
+            # Leading colon — this service's config loader passes GRPC_PORT straight to
+            # net.Listen("tcp", ...).
+            - name: GRPC_PORT
+              value: ":{{ .Values.service.grpcPort }}"
+            {{- range $key, $value := .Values.env.data }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end}}
+            - name: PG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: username
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: password
+        - name: cloud-sql-proxy
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.1.0
+          args:
+            - "--private-ip"
+            {{- if .Values.cloudsql.credentialsSecret }}
+            - "--credentials-file=/secrets/cloudsql/credentials.json"
+            {{- end }}
+            - "--structured-logs"
+            - "--port=5432"
+            - {{ .Values.cloudsql.instance | quote }}
+          {{- if .Values.cloudsql.credentialsSecret }}
+          volumeMounts:
+            - name: cloudsql-instance-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
+          {{- end }}
+          securityContext:
+            runAsNonRoot: true
+          resources:
+            {{- toYaml .Values.resources.cloudSqlProxy | nindent 12 }}
+      {{- if .Values.cloudsql.credentialsSecret }}
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: {{ .Values.cloudsql.credentialsSecret }}
+      {{- end }}

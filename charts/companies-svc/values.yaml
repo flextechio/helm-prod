@@ -1,0 +1,50 @@
+replicaCount: 1
+
+image:
+  repository: asia.gcr.io/flex-rewards/companies-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: companiessvc
+  type: ClusterIP
+  port: 50160
+
+env:
+  data:
+    LOG_FORMAT: "stackdriver"
+    PG_HOST: "127.0.0.1"
+    PG_PORT: "5432"
+    PG_NAME: "flex_companies_prod"
+    PG_SSLMODE: "disable"
+
+    USERS_SVC_ADDR: "userssvc:50010"
+    REWARDS_SVC_ADDR: "rewardssvc:50040"
+    LOYALTY_SVC_ADDR: "loyaltysvc:50100"
+    IMAGES_SVC_ADDR: "imgsvc:50060"
+    PERMISSIONS_SVC_ADDR: permissionssvc:50030
+
+    GCP_PROJECT_ID: "flex-rewards"
+    GCP_SERVICE_ACCOUNT_CRED_FILE: "/secrets/companies-service/companies-service-flex-rewards-e38ffdf7d67f.json"
+    GCP_SERVICE_ACCOUNT_ACCESS_ID: "companies-service@flex-rewards.iam.gserviceaccount.com"
+    GCP_SERVICE_ACCOUNT_PEM_FILE: "/secrets/companies-key/companies-service-prod.pem"
+
+    SQUARE_REFRESH_INTERVAL_DAYS: "90"
+    SQUARE_ENVIRONMENT: "production"
+
+    APPLINK_DOMAIN_URI_PREFIX: "https://flexrewards.app.link"
+    APPLINK_FALLBACK_URI_PREFIX: "https://partner.flexrewards.io"
+    
+    STRIPE_SG_PRICE_ID: "price_1I6YK5LDSN1OB5NvLRHD3dMl"
+    STRIPE_AU_PRICE_ID: "price_1IJ9gQLDSN1OB5Nv18tRpzTR"
+    STRIPE_NZ_PRICE_ID: "price_1IJ9gFLDSN1OB5NvZM2W6nZU"
+    STRIPE_US_PRICE_ID: "price_1IJ9g2LDSN1OB5NvkLwdRSxe"
+    STRIPE_CA_PRICE_ID: "price_1IJ9ggLDSN1OB5NvOZI3HrRG"
+    STRIPE_UK_PRICE_ID: "price_1ITKFdLDSN1OB5NveK5opZPq"
+    STRIPE_SG_TAX_ID:   "txr_1PEinBLDSN1OB5NvTpkyxlLu"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

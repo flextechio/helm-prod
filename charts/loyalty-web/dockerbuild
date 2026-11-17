@@ -1,0 +1,5 @@
+cd ../cosmere/go/src/roshar/apps/password-reset-web
+make dockerbuild
+docker build -t password-reset-web -f Dockerfile .
+rm -f password-reset-web
+cd -

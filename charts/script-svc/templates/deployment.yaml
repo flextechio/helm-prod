@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "script-svc.fullname" . }}
+  labels:
+    app: {{ template "script-svc.name" . }}
+    chart: {{ template "script-svc.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "script-svc.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "script-svc.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "120Mi"
+            limits:
+              cpu: "150m"
+              memory: "240Mi"
+          ports:
+            - name: script-svc
+              containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: secrets
+              mountPath: /secrets/script-service
+              readOnly: true
+            - name: priv-key
+              mountPath: /secrets/script-key
+              readOnly: true
+          env:
+            {{- range $key, $value := .Values.env.data }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end}}
+      volumes:
+        - name: secrets
+          secret:
+            secretName: script-secrets
+        - name: priv-key
+          secret:
+            secretName: script-private-key

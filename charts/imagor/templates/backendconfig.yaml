@@ -1,0 +1,20 @@
+{{- if .Values.cdn.enabled }}
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: {{ .Values.service.name }}-backendconfig
+  labels:
+    app: {{ template "imagor.name" . }}
+    chart: {{ template "imagor.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  cdn:
+    enabled: true
+    cacheMode: {{ .Values.cdn.cacheMode }}
+  # imagor serves HTTP 200 on /healthcheck even when IMAGOR_SECRET is set.
+  # GKE BackendConfig only supports HTTP/HTTPS/HTTP2 health checks (not TCP).
+  healthCheck:
+    type: HTTP
+    requestPath: /healthcheck
+{{- end }}

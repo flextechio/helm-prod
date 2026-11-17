@@ -1,0 +1,35 @@
+# Default values for location-service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: asia.gcr.io/flex-rewards/update-merchant-applinks
+  tag: latest
+  pullPolicy: IfNotPresent
+
+env:
+  data:
+    LOG_LEVEL: "debug"
+    LOG_ENV: "prod"
+    DB_HOST: "cloudsqlsvc"
+    DB_PORT: "5432"
+    DB_NAME: "gc_rewards_prod"
+    DB_SSLMODE: "disable"
+    GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp/image-service-staging-new-flex-rewards-staging-9992c1cff97e.json"
+    GOOGLE_PRIVATE_KEY: "/secrets/privkey/privkey-prod.pem"
+    GOOGLE_PROJECT_ID: "flex-rewards"
+    GOOGLE_TOPIC: "notifications"
+    ANDROID_PACKAGE_NAME: "io.flexrewards.app.store"
+    DOMAIN_URI_PREFIX: "https://flexrewards.page.link"
+    IOS_APP_STORE_ID: "1440722694"
+    IOS_BUNDLE_ID: "io.flexrewards.app.store"
+    FALLBACK_BASE_URL: "https://partner.flexrewards.io"
+    LINK_BASE_URL: "https://flexrewards.io"
+    GCLOUD_SERVICE_ACCOUNT_CRED_FILE: "/secrets/rewards-service/rewards-service-flex-rewards-35c7cea84908.json"
+    GCLOUD_PROJECT_ID: "flex-rewards"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

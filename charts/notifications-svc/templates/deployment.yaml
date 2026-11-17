@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "notifications-svc.fullname" . }}
+  labels:
+    app: {{ template "notifications-svc.name" . }}
+    chart: {{ template "notifications-svc.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "notifications-svc.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "notifications-svc.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              cpu: "20m"
+              memory: "100Mi"
+            limits:
+              cpu: "100m"
+              memory: "150Mi"
+          ports:
+            - name: notsvc
+              containerPort: {{ .Values.service.port }}
+          volumeMounts:
+            - name: google-application-credentials
+              mountPath: /secrets/gcp
+              readOnly: true
+            - name: google-priv-key
+              mountPath: /secrets/privkey
+            - name: secrets
+              mountPath: /secrets/notifications-service
+          env:
+            {{- range $key, $value := .Values.env.data }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end}}
+            # Created out-of-band; chart is public
+            - name: SENDGRID_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: notifications-api-keys
+                  key: sendgrid-api-key
+            - name: FCM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: notifications-api-keys
+                  key: fcm-api-key
+      volumes:
+        - name: google-application-credentials
+          secret:
+            secretName: google-application-credentials
+        - name: google-priv-key
+          secret:
+            secretName: google-priv-key
+        - name: secrets
+          secret:
+            secretName: notifications-secrets

@@ -1,0 +1,24 @@
+# Default values for location-service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: asia.gcr.io/flex-rewards/profile-update-job
+  tag: latest
+  pullPolicy: IfNotPresent
+
+env:
+  data:
+    LOG_LEVEL: "info"
+    LOG_ENV: "prod"
+    DB_HOST: "cloudsqlsvc"
+    DB_PORT: "5432"
+    DB_NAME: "gc_users_prod"
+    DB_SSLMODE: "disable"
+
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

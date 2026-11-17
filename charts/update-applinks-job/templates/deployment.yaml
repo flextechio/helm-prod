@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "update-merchant-applinks.fullname" . }}
+  labels:
+    app: {{ template "update-merchant-applinks.name" . }}
+    chart: {{ template "update-merchant-applinks.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "update-merchant-applinks.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "update-merchant-applinks.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              cpu: "20m"
+              memory: "32Mi"
+            limits:
+              cpu: "100m"
+              memory: "64Mi"
+          volumeMounts:
+            - name: secrets
+              mountPath: /secrets/rewards-service
+              readOnly: true
+            - name: google-application-credentials
+              mountPath: /secrets/gcp
+              readOnly: true
+            - name: google-priv-key
+              mountPath: /secrets/privkey
+          env:
+            {{- range $key, $value := .Values.env.data }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end}}
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: password
+      volumes:
+        - name: secrets
+          secret:
+            secretName: rewards-service-secrets
+        - name: google-application-credentials
+          secret:
+            secretName: google-application-credentials
+        - name: google-priv-key
+          secret:
+            secretName: google-priv-key

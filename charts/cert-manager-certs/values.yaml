@@ -1,0 +1,49 @@
+# Values for cert-manager-certs (prod)
+#
+# Prerequisite: cert-manager must already be installed in the cluster, e.g.:
+#   kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
+#
+# The Route53 secret access key is NOT committed here. By default createSecret
+# is false — create the secret once per cluster with:
+#   kubectl -n cert-manager create secret generic route53-credentials \
+#     --from-literal=secret-access-key='<AWS_SECRET_ACCESS_KEY>'
+
+acme:
+  # Let's Encrypt production endpoint.
+  # To test without hitting rate limits, use the staging endpoint:
+  #   https://acme-staging-v02.api.letsencrypt.org/directory
+  server: https://acme-v02.api.letsencrypt.org/directory
+  # Optional. Let's Encrypt no longer emails expiry notices, so this can stay empty.
+  email: ""
+
+issuer:
+  # Name of the ClusterIssuer (cluster-scoped).
+  name: letsencrypt-route53
+
+route53:
+  region: us-east-1
+  # AWS access key ID is referenced in plain text (not treated as sensitive by cert-manager).
+  accessKeyID: ""
+  # Name/namespace of the secret holding the AWS secret access key.
+  # For a ClusterIssuer, cert-manager looks this up in its cluster resource
+  # namespace (default: cert-manager).
+  secretName: route53-credentials
+  secretNamespace: cert-manager
+  # Optional: restrict DNS01 changes to a single hosted zone ID.
+  hostedZoneID: ""
+  # Leave false and create the secret with kubectl (recommended).
+  # Set true only if you intend to manage the secret via Helm --set (never commit it).
+  createSecret: false
+  secretAccessKey: ""
+
+certificate:
+  name: flexrewards-wildcard
+  # Namespace where the resulting TLS secret is created. Must match the
+  # namespace of the ingress that consumes it.
+  namespace: default
+  # Must match the ingress chart's service.secret value.
+  secretName: tls-secrets
+  dnsNames:
+    - "*.flexrewards.io"
+  # Restrict the DNS01 solver to this zone.
+  dnsZone: flexrewards.io

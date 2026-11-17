@@ -1,0 +1,23 @@
+replicaCount: 1
+
+image:
+  repository: asia.gcr.io/flex-rewards/migration-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+env:
+  data:
+    LOG_FORMAT: "stackdriver"
+    PG_HOST: "127.0.0.1"
+    PG_PORT: "5432"
+    PG_NAME: "flex_migration_prod"
+    PG_SSLMODE: "disable"
+
+    GCP_PROJECT_ID: "flex-rewards"
+    GCP_SERVICE_ACCOUNT_CRED_FILE: "/secrets/scribe-service/scribe-svc-flex-rewards-dd66400aaa3e.json"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

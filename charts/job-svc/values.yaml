@@ -1,0 +1,60 @@
+# Default values for location-service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: asia.gcr.io/flex-rewards/job-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: jobsvc
+  type:
+  port: 60000
+
+env:
+  data:
+    # DB Connection
+    DB_HOST: "127.0.0.1"
+    DB_PORT: "5432"
+    DB_NAME: "gc_jobs_prod"
+    DB_SSLMODE: "disable"
+
+    # Service Connections
+    WALLETS_SVC_ADDR: "walletssvc:50080"
+    AUTHN_SVC_ADDR: "authnsvc:50020"
+    REWARDS_SVC_ADDR: "rewardssvc:50040"
+    LOCATIONS_SVC_ADDR: "locationsvc:50070"
+    NOTIFICATIONS_SVC_ADDR: "walletssvc:50050"
+    ETH_SVC_ADDR: "ethsvc:50090"
+
+    # Eth Service envars
+    HOT_WALLET_PUB: "0x7A8a7870bd398240CE3523Ab7E76153ba34B7116"
+    ETHER_LOWER_BOUND: "10000000000000000000"
+    GAT_UPPER_BOUND: "10000000000000000000000000"
+    GAT_LOWER_BOUND: "10000000000000000000000"
+
+    # Job Service envars
+    CONCURRENT_GO_ROUTINES: 5
+    GOOGLE_SERVICE_ACCOUNT: "flex-storage-access@flex-rewards.iam.gserviceaccount.com"
+    GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp/flex-rewards-c0eba827a6f7.json"
+    GOOGLE_PRIVATE_KEY: "/secrets/privkey/privkey-prod.pem"
+    GOOGLE_PROJECT_ID: "flex-rewards"
+    GOOGLE_SUBSCRIPTION: "job-service-sub"
+
+    # General envars
+
+    LOG_LEVEL: "debug"
+    LOG_ENV: "prod"
+
+    # if multiple emails separate by a comma,
+    # e.g. weiming@flextech.io,james@flextech.io
+    EMAILS_TO_NOTIFY: "weiming@flextech.io"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

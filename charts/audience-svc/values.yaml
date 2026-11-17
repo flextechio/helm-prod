@@ -1,0 +1,39 @@
+# Default values for app-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: asia.gcr.io/flex-rewards/audience-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  name: audiencesvc
+  type:
+  port: 50140
+
+env:
+  data:
+    LOG_FORMAT: "stackdriver"
+    PG_HOST: "127.0.0.1"
+    PG_PORT: "5432"
+    PG_NAME: "flex_loyalty_prod"
+    PG_SSLMODE: "disable"
+
+    REWARDS_SVC_ADDR: "rewardssvc:50040"
+    LOYALTY_SVC_ADDR: "loyaltysvc:50100"
+    MESSAGING_SVC_ADDR: "messagingsvc:50130"
+    COMPANIES_SVC_ADDR: "companiessvc:50160"
+
+    GCP_PROJECT_ID: "flex-rewards"
+    GCP_SERVICE_ACCOUNT_CRED_FILE: "/secrets/audience-service/audience-svc-flex-rewards-bc04f9ee54e0.json"
+    GCP_SERVICE_ACCOUNT_ACCESS_ID: "audience-service@flex-rewards.iam.gserviceaccount.com"
+    GCP_SERVICE_ACCOUNT_PEM_FILE: "/secrets/audience-key/audience-prod.pem"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

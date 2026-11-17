@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "image-svc.fullname" . }}
+  labels:
+    app: {{ template "image-svc.name" . }}
+    chart: {{ template "image-svc.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    config.linkerd.io/proxy-cpu-limit: "1.5"
+    config.linkerd.io/proxy-cpu-request: "0.2"
+    config.linkerd.io/proxy-memory-limit: 2Gi
+    config.linkerd.io/proxy-memory-request: 128Mi
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "image-svc.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "image-svc.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              cpu: "20m"
+              memory: "200Mi"
+            limits:
+              cpu: "100m"
+              memory: "400Mi"
+          ports:
+            - name: image-svc
+              containerPort: {{ .Values.service.port }}
+          securityContext:
+            runAsUser: 2  # non-root user
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: google-application-credentials
+              mountPath: /secrets/gcp
+              readOnly: true
+            - name: google-priv-key
+              mountPath: /secrets/privkey
+          env:
+            {{- range $key, $value := .Values.env.data }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end}}
+            # Shared with imagor IMAGOR_SECRET; created out-of-band, chart is public
+            - name: THUMBOR_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: image-signing-key
+                  key: secret
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql-db-credentials
+                  key: password
+        - name: cloud-sql-proxy
+          image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.1.0
+          args:
+            - "--private-ip"
+            - "--credentials-file=/secrets/cloudsql/credentials.json"
+            - "--structured-logs"
+            - "--port=5432"
+            - "flex-rewards:asia-southeast1:flexrewards-postgres-clu"
+          volumeMounts:
+            - name: cloudsql-instance-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
+          securityContext:
+            runAsNonRoot: true
+          resources:
+            limits:
+              memory: "150Mi"
+              cpu:    "80m"
+            requests:
+              memory: "100Mi"
+              cpu:    "50m"
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret:
+            secretName: cloudsql-instance-credentials
+        - name: google-application-credentials
+          secret:
+            secretName: google-application-credentials
+        - name: google-priv-key
+          secret:
+            secretName: google-priv-key
