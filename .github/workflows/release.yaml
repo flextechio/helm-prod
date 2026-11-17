@@ -1,0 +1,185 @@
+name: Release Charts
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: staged-release
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.4.0
+
+      # A chart describes how something is deployed. Nothing else belongs under charts/:
+      # this repository publishes to a PUBLIC Helm index, so a file committed here is
+      # downloadable by anyone, and a test or fixture that lands in a chart is not
+      # misfiled, it is published.
+      #
+      # Runs BEFORE the allowlist prune deliberately, so it inspects the repository as
+      # committed rather than only what is about to be published - a test in a
+      # non-allowlisted chart is still a test in this repository.
+      #
+      # Note what is NOT rejected: YAML under templates/. Helm's own test hooks
+      # (helm.sh/hook: test) legitimately live in templates/tests/, and rejecting the
+      # word "test" would break them. This rejects SOURCE files - Go, JS/TS, Python -
+      # and testdata directories.
+      - name: Reject non-chart content under charts/
+        run: |
+          set -uo pipefail
+          found=$(find charts -type f \( \
+                    -name '*_test.go'   -o -name '*.go'       -o \
+                    -name '*.test.js'   -o -name '*.test.ts'  -o \
+                    -name '*.spec.js'   -o -name '*.spec.ts'  -o \
+                    -name '*_test.py'   -o -name 'go.mod'     -o \
+                    -name 'go.sum'      -o -name 'package.json' \
+                  \) 2>/dev/null)
+          dirs=$(find charts -type d -name testdata 2>/dev/null)
+          if [ -n "$found" ] || [ -n "$dirs" ]; then
+            echo "::error::Source or test files found under charts/. Charts describe deployment only." >&2
+            printf '%s\n' $found $dirs | sed 's/^/    /' >&2
+            echo "" >&2
+            echo "Tests belong beside the code they test, in cosmere:" >&2
+            echo "  go/src/roshar/services/<svc>/pkg/.../<thing>_test.go" >&2
+            echo "Cross-service tests belong in go/src/roshar/testsuite/e2e/<flow>/." >&2
+            echo "See cosmere/AGENTS.md, 'Where things go'." >&2
+            exit 1
+          fi
+
+      # Explicit allowlist: a chart is published only if it is named here.
+      # A newly added chart under charts/ is excluded by default until someone
+      # adds it to this list — fail closed, not fail open. chart-releaser has
+      # no include-list input, so we delete everything else from charts/ before
+      # it runs; `cr` never sees a non-allowlisted chart on disk.
+      #
+      # Must prune in place rather than stage into a temp dir: `cr` discovers
+      # work by git-diffing charts_dir between the last tag and HEAD, so a
+      # runtime-created dir is in neither revision and the diff is always empty.
+      #
+      # Credential charts (cloud-db-credentials, cloud-instance-credentials,
+      # cloudsql-nonpub-db-credentials, eth-priv-address,
+      # google-application-credentials) and ingressTest are not in this repo at
+      # all: Prod secrets are created on the cluster out-of-band.
+      - name: Prune non-allowlisted charts
+        run: |
+          set -euo pipefail
+          allowlist=(
+            admin-web
+            airdrop-job
+            alerts-svc
+            app-server
+            audience-svc
+            authn-svc
+            cert-manager-certs
+            cloud-sql-proxy
+            companies-svc
+            companion-web
+            eth-listener
+            eth-svc
+            flex-web
+            image-svc
+            imagor
+            ingress
+            job-svc
+            location-svc
+            loyalty-svc
+            loyalty-web
+            messaging-svc
+            migration-svc
+            notifications-svc
+            password-reset-svc
+            password-reset-web
+            permissions-svc
+            portal-api
+            portal-web
+            pos-gateway-svc
+            printstudio-svc
+            profile-update-job
+            referral-web
+            rewards-svc
+            scribe-svc
+            script-svc
+            stripe-api
+            update-applinks-job
+            update-program-reward-job
+            update-stamp-store-id
+            update-welcome-rewards
+            users-svc
+            wallets-svc
+          )
+          for chart in "${allowlist[@]}"; do
+            if [ ! -f "charts/${chart}/Chart.yaml" ]; then
+              echo "ALLOWLIST ERROR: charts/${chart} has no Chart.yaml (renamed, moved or removed?)" >&2
+              exit 1
+            fi
+          done
+          for dir in charts/*/; do
+            name="$(basename "$dir")"
+            keep=0
+            for chart in "${allowlist[@]}"; do
+              [ "$name" = "$chart" ] && keep=1 && break
+            done
+            [ "$keep" -eq 1 ] || rm -rf "$dir"
+          done
+          # Assert charts/ is now exactly the allowlist: a typo or a leftover
+          # directory fails the run instead of silently publishing or skipping.
+          diff <(printf '%s\n' "${allowlist[@]}" | sort) <(ls -1 charts | sort)
+
+      # cr forces --skip-existing under packages_with_index, so a chart whose
+      # version already has a release is skipped in silence: no package, no
+      # index entry, no error. Fail loudly instead of losing the change.
+      - name: Fail if a changed chart was not version-bumped
+        run: |
+          set -uo pipefail
+          fail=0
+          for dir in charts/*/; do
+            [ -f "${dir}Chart.yaml" ] || continue
+            name=$(awk '/^name:/{print $2; exit}' "${dir}Chart.yaml")
+            ver=$(awk '/^version:/{print $2; exit}' "${dir}Chart.yaml")
+            tag="${name}-${ver}"
+            git rev-parse -q --verify "refs/tags/${tag}" >/dev/null || continue
+            if [ -n "$(git diff --name-only "refs/tags/${tag}" HEAD -- "${dir}")" ]; then
+              echo "NOT BUMPED: ${dir} changed since ${tag} but version is still ${ver}" >&2
+              git diff --name-only "refs/tags/${tag}" HEAD -- "${dir}" | sed 's/^/    /' >&2
+              fail=1
+            fi
+          done
+          exit $fail
+
+      - name: Lint and render charts
+        run: |
+          fail=0
+          for chart in charts/*/; do
+            [ -f "${chart}Chart.yaml" ] || continue
+            echo "==> Linting ${chart}"
+            helm lint "${chart}" || fail=1
+            echo "==> Rendering ${chart}"
+            helm template "${chart}" > /dev/null || fail=1
+          done
+          exit $fail
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.7.0
+        with:
+          charts_dir: charts
+          skip_existing: true
+          packages_with_index: true
+          pages_branch: gh-pages
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
