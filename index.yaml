@@ -1,0 +1,425 @@
+apiVersion: v1
+entries:
+  admin-web:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:06.516350789Z"
+    description: nginx deployment for admin-web
+    digest: 7981d7342f914b2878326b725adc1c39644b321be2135cef0cf5fd8fb73d0edd
+    name: admin-web
+    urls:
+    - admin-web-0.1.0.tgz
+    version: 0.1.0
+  airdrop-job:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:06.690673374Z"
+    description: Background task for airdrop location data
+    digest: 42b2406524157ddcc6b1ff6e4a83aeb4503137f5d2fd2a00cf31c62b3ecdfa50
+    name: airdrop-job
+    urls:
+    - airdrop-job-0.1.1.tgz
+    version: 0.1.1
+  alerts-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:06.860997292Z"
+    description: Alerts Service for Kubernetes Staging
+    digest: bc062b94fb654a3da0d26f7d426d6437768958a64bbbd557493c21fe4601319a
+    name: alerts-svc
+    urls:
+    - alerts-svc-0.1.2.tgz
+    version: 0.1.2
+  app-server:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:07.010518584Z"
+    description: Test for app-server
+    digest: 61175c0400ce0934f5b22a8c3519867a722a553dc0e101589dab5a2d7ec9a461
+    name: app-server
+    urls:
+    - app-server-0.1.5.tgz
+    version: 0.1.5
+  audience-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:07.172596889Z"
+    description: Audience Service for Kubernetes Production
+    digest: e899c8fb78806b76ec46ff21bbef939f2422f6adb7315b6666b6ba48a715b42f
+    name: audience-svc
+    urls:
+    - audience-svc-0.1.0.tgz
+    version: 0.1.0
+  authn-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:07.334537505Z"
+    description: New auth Service for flextech
+    digest: 488b1096fa4c268cffdf5656c897be45a523d0c20c17bafc3d9ea805ec7f810d
+    name: authn-svc
+    urls:
+    - authn-svc-0.1.1.tgz
+    version: 0.1.1
+  cert-manager-certs:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:07.504347779Z"
+    description: cert-manager ClusterIssuer and wildcard Certificate for *.flexrewards.io
+      (prod)
+    digest: 83938744657e3c8cf7230558db497b4b29c0088b42e8268d9ae8fdd2cb246c8b
+    name: cert-manager-certs
+    urls:
+    - cert-manager-certs-0.1.0.tgz
+    version: 0.1.0
+  cloud-sql-proxy:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:07.649592265Z"
+    description: Kubernetes access to Cloud SQL via a proxy
+    digest: cca00a474e827bd1045e270dc62f99df1a245d8b8a14df78eeae24d017c8ce78
+    name: cloud-sql-proxy
+    urls:
+    - cloud-sql-proxy-0.1.0.tgz
+    version: 0.1.0
+  companies-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:07.9408104Z"
+    description: Companies Service for Kubernetes Production
+    digest: b53930b77fff63c3256b80a729366e760be5cc849613f1dab951ac28594da2ca
+    name: companies-svc
+    urls:
+    - companies-svc-0.1.0.tgz
+    version: 0.1.0
+  companion-web:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:08.236333176Z"
+    description: nginx deployment for companion-web
+    digest: d8e7f39799a1ab31b3051ad24078dcb4f2755f78af037cc286a5baa3e2deca24
+    name: companion-web
+    urls:
+    - companion-web-0.1.0.tgz
+    version: 0.1.0
+  eth-listener:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:08.497526289Z"
+    description: Ethereum Listener for Kubernetes Staging
+    digest: 2fa4e1c753e4568c41a3062b9a5476b4bfd06d2c8091f4d29b115180200caad5
+    name: eth-listener
+    urls:
+    - eth-listener-0.1.0.tgz
+    version: 0.1.0
+  eth-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:08.791371198Z"
+    description: Ethereum Service for Kubernetes Dev
+    digest: 08bf7cbe3bf4314a5bd89cb21caa422d264c9c3538244a439b12ff073f9b519c
+    name: eth-svc
+    urls:
+    - eth-svc-0.1.0.tgz
+    version: 0.1.0
+  flextechdev-ingress:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:09.056300259Z"
+    description: Ingress service for Kubernetes
+    digest: bb07602d278c677156d2c90cb226e65396bd5b798c03d513b01b2447f2eba8f8
+    name: flextechdev-ingress
+    urls:
+    - flextechdev-ingress-0.1.0.tgz
+    version: 0.1.0
+  image-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:09.349658859Z"
+    description: Image Service for Kubernetes Dev
+    digest: 166c3da34b45f31aedb1abe252515eaaf7a3ecd46049c7ee23a9f70fd1aefa92
+    name: image-svc
+    urls:
+    - image-svc-0.1.5.tgz
+    version: 0.1.5
+  imagor:
+  - apiVersion: v1
+    appVersion: 1.9.1
+    created: "2026-11-18T00:07:09.659213835Z"
+    description: imagor image processing server (thumbor-compatible) for Kubernetes
+      Prod
+    digest: 14567212e9c3386ec7c1549ff42d0fde210ed5a6383845a8ac1c73c20c7a9050
+    name: imagor
+    urls:
+    - imagor-0.1.2.tgz
+    version: 0.1.2
+  job-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:09.951281235Z"
+    description: Job Service for Kubernetes Dev
+    digest: be58c364e94f1f7625022bb6f006948de6dda879743582926992dacf036849c9
+    name: job-svc
+    urls:
+    - job-svc-0.1.0.tgz
+    version: 0.1.0
+  location-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:10.209018012Z"
+    description: Location Service for Kubernetes Dev
+    digest: f2eb29435adffda00ab2111c8ea32fb913ec64f2d6176ef08bebb2b3c74cb3c1
+    name: location-svc
+    urls:
+    - location-svc-0.1.1.tgz
+    version: 0.1.1
+  loyalty-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:10.479856427Z"
+    description: Loyalty Service for Kubernetes Dev
+    digest: de5af620384bc421dfa1713af55334a682a7e8acfdb2700be80e5dbab07a4fa8
+    name: loyalty-svc
+    urls:
+    - loyalty-svc-0.1.2.tgz
+    version: 0.1.2
+  loyalty-web:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:10.685420157Z"
+    description: Loyalty web for Kubernetes Staging
+    digest: 3dfafe810300cbe7b0f592d0239fe8223b696b735cfd48eadcd02dacec35fb5d
+    name: loyalty-web
+    urls:
+    - loyalty-web-0.1.0.tgz
+    version: 0.1.0
+  messaging-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:10.963230387Z"
+    description: Messaging Service for Kubernetes Production
+    digest: f3f585429b417fc7f5dc926cd5cce34ef97a067b0c82d576de9051a354ea32ab
+    name: messaging-svc
+    urls:
+    - messaging-svc-0.1.0.tgz
+    version: 0.1.0
+  migration-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:11.249417992Z"
+    description: Migration Service for Kubernetes Production
+    digest: 8225d6b0a34e12fcaaa797266ad96e5123edd1ff0887d12bbf0a420c665321cc
+    name: migration-svc
+    urls:
+    - migration-svc-0.1.0.tgz
+    version: 0.1.0
+  notifications-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:11.558258193Z"
+    description: Notifications Service for Kubernetes Dev
+    digest: 05a8f6d1d3189af21b0571ccedc4c396ecae9ef4a21496b78c75639a69dd4352
+    name: notifications-svc
+    urls:
+    - notifications-svc-0.1.2.tgz
+    version: 0.1.2
+  password-reset-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:11.805286998Z"
+    description: Password reset service for Kubernetes Prod
+    digest: 53acc8bdd7d7b9576f3123e89636ae95d1fcca68e1603f2397ad33c8c346c81e
+    name: password-reset-svc
+    urls:
+    - password-reset-svc-0.1.0.tgz
+    version: 0.1.0
+  password-reset-web:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:12.075165045Z"
+    description: Password reset web for Kubernetes Dev
+    digest: 7e7b5c56bfb3441d13c5558156f2e62df4ec330d1cf8c99cf3fe64d39022baf6
+    name: password-reset-web
+    urls:
+    - password-reset-web-0.1.0.tgz
+    version: 0.1.0
+  permissions-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:12.384919248Z"
+    description: Permissions Service for Kubernetes Dev
+    digest: 76ca60ac81f814b2071f48d9b12aab366a25a3ac32e8525164b44f46efd28081
+    name: permissions-svc
+    urls:
+    - permissions-svc-0.1.4.tgz
+    version: 0.1.4
+  portal-api:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:12.613236157Z"
+    description: portal-api entry point for merchants
+    digest: 1ba0dbd3cecc7ed8ebf3cd667167c89a4a0931d1d74fc542d9b2784a80cf9137
+    name: portal-api
+    urls:
+    - portal-api-0.1.3.tgz
+    version: 0.1.3
+  portal-web:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:12.806574921Z"
+    description: nginx deployment for portal-web
+    digest: 328120a224795299343a6224aabbd72064accd9f590d1d242452e233f548ca3f
+    name: portal-web
+    urls:
+    - portal-web-0.1.0.tgz
+    version: 0.1.0
+  pos-gateway-svc:
+  - apiVersion: v1
+    appVersion: "0.1"
+    created: "2026-11-18T00:07:13.00912037Z"
+    description: POS gateway service for Kubernetes Production
+    digest: 5e3e012029504e650e79faddd43d33fe4e6142cce065e1bee34985694c124e12
+    name: pos-gateway-svc
+    urls:
+    - pos-gateway-svc-0.1.0.tgz
+    version: 0.1.0
+  printstudio-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:13.245498345Z"
+    description: Print Studio Service for Kubernetes Staging
+    digest: 59277bf1804128291e78ea254d52a623082f4a9b3c47aee89fd94d706c3d97c4
+    name: printstudio-svc
+    urls:
+    - printstudio-svc-0.1.0.tgz
+    version: 0.1.0
+  profile-update-job:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:13.458299846Z"
+    description: Updates the users reset token
+    digest: 0afcadb8ed272be1db15c4ae21e40597f7c6870d54267e204b27c0a931bbe173
+    name: profile-update-job
+    urls:
+    - profile-update-job-0.1.0.tgz
+    version: 0.1.0
+  referral-web:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:13.735513035Z"
+    description: Referral web app for Kubernetes Dev
+    digest: ad50e54553c313f49bac2fdecfeeb8bef2d53def74a194a58dd6f8e2f93e64f7
+    name: referral-web
+    urls:
+    - referral-web-0.1.0.tgz
+    version: 0.1.0
+  rewards-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:13.943831558Z"
+    description: Rewards Service for Kubernetes Dev
+    digest: 8fc926437c17a45fa08d71104e9956f7b361ce8c1c7c6eea684950f79963d910
+    name: rewards-svc
+    urls:
+    - rewards-svc-0.1.7.tgz
+    version: 0.1.7
+  scribe-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:14.205357229Z"
+    description: Scribe Service for Kubernetes Dev
+    digest: dadfcc4ed02d1024abd2153b7f8d761bc360fb61b41c90ae54d03dbcebdf067b
+    name: scribe-svc
+    urls:
+    - scribe-svc-0.1.0.tgz
+    version: 0.1.0
+  script-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:14.45730328Z"
+    description: script Service for Kubernetes Dev
+    digest: f90d5659eaa3740290750bc81b6277eff5dbf6cfd2dfcce7b29762f497e6b078
+    name: script-svc
+    urls:
+    - script-svc-0.1.0.tgz
+    version: 0.1.0
+  stripe-api:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:14.771836089Z"
+    description: stripe-api entry point for merchants
+    digest: ad95d0989a49a7548bb05dbb9fc3b82d10fd5c2abfbcb2b9f47195ee3bb909b8
+    name: stripe-api
+    urls:
+    - stripe-api-0.1.1.tgz
+    version: 0.1.1
+  update-merchant-applinks:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:15.012419359Z"
+    description: Updates the Merchant applinks
+    digest: 90e52b16433b7eae7191725ed123a17201dd28b2bd7feb4af45419690649369a
+    name: update-merchant-applinks
+    urls:
+    - update-merchant-applinks-0.1.0.tgz
+    version: 0.1.0
+  update-program-reward:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:15.344824172Z"
+    description: Update Program Reward JOb for Kubernetes Dev
+    digest: 85acbf89b9ce4909ef22475aa6188ae0cee3e8b9ebecde5e410ccb3688583766
+    name: update-program-reward
+    urls:
+    - update-program-reward-0.1.0.tgz
+    version: 0.1.0
+  update-stamp-store-id:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:15.577178652Z"
+    description: Update Program Reward JOb for Kubernetes Dev
+    digest: ad385e8c66369aae1f196cd13d560a2b7bf8e4c6ab35f34261b7cdb248aa5d3d
+    name: update-stamp-store-id
+    urls:
+    - update-stamp-store-id-0.1.0.tgz
+    version: 0.1.0
+  update-welcome-rewards:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:15.790475932Z"
+    description: Update Welcome Reward job for Kubernetes
+    digest: 0f031dc8e04412ce1c7465e3c04554329efc03b0b3359ff360cad25af772c4e6
+    name: update-welcome-rewards
+    urls:
+    - update-welcome-rewards-0.1.0.tgz
+    version: 0.1.0
+  users-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:16.035851496Z"
+    description: Image Service for Kubernetes Dev
+    digest: b84d8be6abef53fc325089700dc08466ef1919b58df367b7c8178db44d5d4e7e
+    name: users-svc
+    urls:
+    - users-svc-0.1.3.tgz
+    version: 0.1.3
+  wallets-svc:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:16.275868183Z"
+    description: Wallets Service for Kubernetes Dev
+    digest: d18b4fc918e1ce8e7b9aac11bc6201745788171ae5f22fa9911f8318f068ffe2
+    name: wallets-svc
+    urls:
+    - wallets-svc-0.1.3.tgz
+    version: 0.1.3
+  web-app:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2026-11-18T00:07:16.496854338Z"
+    description: nginx deployment for web-app
+    digest: c9f2c9fc8d934043d5aae9c08ba372dcc034b44e6da86ec2c2dc6c285df6b05f
+    name: web-app
+    urls:
+    - web-app-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-11-18T00:07:16.496871053Z"
