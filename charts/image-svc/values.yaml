@@ -33,6 +33,7 @@ env:
     GOOGLE_APPLICATION_CREDENTIALS: "/secrets/gcp/flex-rewards-c0eba827a6f7.json"
     GOOGLE_PRIVATE_KEY: "/secrets/privkey/privkey-prod.pem"
     CDN_URL: "images.flexrewards.io"
+    IMAGE_ENGINE: "imagor"
     SIGNED_URL_EXPIRY: "900"
 
 nodeSelector: {}
